@@ -8,3 +8,7 @@ body{
 p{
     font-size: 20px;
 }
+
+#again_button{
+    align-self: center;
+}

@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function getEpoch(username){
+  const currentDate = new Date();
+  const unixTime_s = (currentDate.getTime())/1000;
   const URL = "http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user="+username+"&api_key="+APIkey+"&format=json";
   fetch(URL)
     .then(response=>{
@@ -74,8 +76,15 @@ function getDataSet(username, period){
     const URL = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user="
     +username+"&api_key="+
     APIkey+"&format=json";
-    //list of top artists
-    //corresponding list of numbers
+    const artists_array = [];
+    const plays_array = [];
+    const from=0; const to =0; const epoch = getEpoch(username);
+    //check timeframe
+    if(period === "lmonth"){
+      to = epoch;
+      from = epoch - (30);
+
+    }
     //n amount these 2 lists, n being number of months, n=15 when 1 month is selected (every 2 days)
     fetch(URL)
     .then(response=>{
@@ -85,15 +94,16 @@ function getDataSet(username, period){
       return response.json();
     })
     .then(data=>{
+      //get data from retrieved json object
       const chart = data.weeklyartistchart;
       const artists = chart.artist;
       for(artist of artists){
-        console.log(artist.name);      
+        artists_array.push(artist.name);
+        plays_array.push(artist.playcount);  
       }
-      //console.log(data);
+      console.log(data);
     })
     .catch(error=>{
       console.error('Operation error', error);
     });
 }
-
