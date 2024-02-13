@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAR.FM</title>
+    <link rel="stylesheet" type="text/css" href="lastfmChart.css" title="style">
+</head>
+<body>
+
+    <h1>Bar Fm</h1>
+    <p>Enter your username and select a time frame to get started</p>
+    <div id="form_container">
+        <form id="start_form">
+            <label for="username">username:</label><br>
+            <input type="text" id="username" name="username"><br><br>
+
+            <input type="radio" id="time_frame" name="time_frame" value="lmonth">
+            <label for="lmonth">Last 30 days</label><br>
+
+            <input type="radio" id="time_frame" name="time_frame" value="lyear">
+            <label for="lyear">Last year</label><br>
+
+            <input type="radio" id="time_frame" name="time_frame" value="alltime">
+            <label for="lyear">All Time</label><br>
+            <!-- change to year dropdown -->
+
+            <input type="submit" value = "Submit" id="submit_button"></button>
+
+        </form> 
+    </div>
+
+    <button id="again_button">Redo</button>
+
+
+    <output id="output"></output>
+    
+<script src="lastfmscript.js"></script>
+</body>
+</html>

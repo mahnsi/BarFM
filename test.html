@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Toggle</title>
+</head>
+<body>
+
+<div id="form-container">
+  <form id="myForm">
+    <label for="textInput">Enter some text:</label><br>
+    <input type="text" id="textInput" name="textInput"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+</div>
+
+<div id="button-container">
+  <button id="toggleButton">Hide Form</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const formContainer = document.getElementById('form-container');
+  const buttonContainer = document.getElementById('button-container');
+  const toggleButton = document.getElementById('toggleButton');
+  const myForm = document.getElementById('myForm');
+
+  // Function to toggle form visibility
+  function toggleForm() {
+    if (formContainer.style.display === 'none') {
+      formContainer.style.display = 'block';
+      toggleButton.textContent = 'Hide Form';
+    } else {
+      formContainer.style.display = 'none';
+      toggleButton.textContent = 'Show Form';
+    }
+  }
+
+  // Event listener for form submission
+  myForm.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission behavior
+    toggleForm(); // Hide the form
+    myForm.reset(); // Clear form fields
+  });
+
+  // Event listener for button click to toggle form visibility
+  toggleButton.addEventListener('click', toggleForm);
+});
+</script>
+
+</body>
+</html>
