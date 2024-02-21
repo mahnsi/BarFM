@@ -1,53 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Toggle</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuChatBot</title>
+    <link rel="stylesheet" type="text/css" href="lastfmChart.css" title="style">
 </head>
 <body>
 
-<div id="form-container">
-  <form id="myForm">
-    <label for="textInput">Enter some text:</label><br>
-    <input type="text" id="textInput" name="textInput"><br><br>
-    <input type="submit" value="Submit">
-  </form>
-</div>
+    <h1>YU Chat Bot</h1>
+    <p>Enter your prompt</p>
+    <div id="form_container">
+        <form id="start_form">
+            <label for="prompt">prompt:</label><br>
+            <input type="text" id="prompt" name="prompt"><br><br>
 
-<div id="button-container">
-  <button id="toggleButton">Hide Form</button>
-</div>
+            <input type="submit" value = "Submit" id="submit_button"></button>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const formContainer = document.getElementById('form-container');
-  const buttonContainer = document.getElementById('button-container');
-  const toggleButton = document.getElementById('toggleButton');
-  const myForm = document.getElementById('myForm');
+        </form> 
+    </div>
 
-  // Function to toggle form visibility
-  function toggleForm() {
-    if (formContainer.style.display === 'none') {
-      formContainer.style.display = 'block';
-      toggleButton.textContent = 'Hide Form';
-    } else {
-      formContainer.style.display = 'none';
-      toggleButton.textContent = 'Show Form';
-    }
-  }
+    <button id="again_button">Redo</button>
 
-  // Event listener for form submission
-  myForm.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission behavior
-    toggleForm(); // Hide the form
-    myForm.reset(); // Clear form fields
-  });
 
-  // Event listener for button click to toggle form visibility
-  toggleButton.addEventListener('click', toggleForm);
-});
-</script>
-
+    <output id="output"></output>
+    
+<script src="test.js"></script>
 </body>
 </html>
