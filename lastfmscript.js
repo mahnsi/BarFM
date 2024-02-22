@@ -95,21 +95,27 @@ async function getDataSet(username, period) {
           APIkey + "&format=json";
       const artists_array = []; const plays_array = [];
       let from = 0; let to = 0; let interval = 0;
-      to = Math.floor(Date.now() / 1000);//current time
+      to = Math.floor(Date.now() / 1000);//current unix time in seconds
       //check timeframe
       if (period === "lmonth") {
         from = to - (2592000); //one month seconds
         interval = 172800;  //seconds in 2 days: 172800
       }
       else if (period === "lyear"){
-        from = to - 2592000 * 12 //check this
+        from = to - 31536000;
       }
-     
+      if(from<epoch){
+        console.log("account created after timeframe start");
+        from = epoch;
+      }
+      console.log("data from: " + from + " to: " + to);
       const response = await fetch(URL);
+
       if (!response.ok) {
           throw new Error('Network error');
       }
       const data = await response.json();
+
       //get data from retrieved json object
       const chart = data.weeklyartistchart;
       const artists = chart.artist;
@@ -123,6 +129,6 @@ async function getDataSet(username, period) {
       }
       console.log(data);
   } catch (error) {
-      console.error('Operation herror', error);
+      console.error('Operation herror..', error);
   }
 }
