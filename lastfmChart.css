@@ -1,14 +1,99 @@
-body{
-    background-color: darkred;
-    font-size: 30px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+body {
+    background-color: #34495e;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #ecf0f1;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
-p{
-    font-size: 20px;
+h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #e74c3c;
 }
 
-#again_button{
-    align-self: center;
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #bdc3c7;
+}
+
+#form_container {
+    background-color: #2c3e50;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 18px;
+    color: #ecf0f1;
+}
+
+input[type="text"], input[type="radio"] {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #95a5a6;
+    border-radius: 5px;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+input[type="radio"] {
+    width: auto;
+}
+
+input[type="submit"] {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #c0392b;
+}
+
+#again_button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+#again_button:hover {
+    background-color: #2980b9;
+}
+
+#output_container {
+    display: none;
+    margin-top: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    color: #ecf0f1;
 }

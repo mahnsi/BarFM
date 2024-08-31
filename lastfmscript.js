@@ -88,46 +88,73 @@ function getEpoch(username) {
 
 async function getDataSet(username, period) {
   console.log("3: getting data set for user " + username);
-  try {
       const epoch = await getEpoch(username); // Wait for getEpoch to finish- returns epoch in seconds
-      const URL = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user=" +
-          username + "&api_key=" +
-          APIkey + "&format=json";
       const artists_array = []; const plays_array = [];
       let from = 0; let to = 0; let interval = 0;
       to = Math.floor(Date.now() / 1000);//current unix time in seconds
       //check timeframe
       if (period === "lmonth") {
-        from = to - (2592000); //one month seconds
-        interval = 172800;  //seconds in 2 days: 172800
+        from = to - (2592000); //from is one month before "now (to)". 1 month = 2592000 seconds
+        interval = 172800;  //for 1 month we want the interval to be every 2 days.. seconds in 2 days: 172800
       }
       else if (period === "lyear"){
         from = to - 31536000;
+        interval = 2592000; //for 1 year we want the interval to be every month.. seconds in 30 days: 2592000
       }
+
+      else if (period === "alltime"){
+        from = epoch;
+        interval = 2592000; //for all time we want the interval to be every month.. seconds in 30 days: 2592000
+      }
+
       if(from<epoch){
         console.log("account created after timeframe start");
         from = epoch;
       }
       console.log("data from: " + from + " to: " + to);
-      const response = await fetch(URL);
 
-      if (!response.ok) {
+  try{
+   let j=0;
+      for (i = from; i<=to; i+=interval){
+        //changes 'to' and from=i values based on iteration
+        URL = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user=" +
+          username 
+          +"&from="+ from
+          +"&to="+ i
+          + "&api_key=" + APIkey
+          + "&format=json";
+
+        const response = await fetch(URL);
+
+        if (!response.ok) {
           throw new Error('Network error');
-      }
-      const data = await response.json();
+        }
+        const data = await response.json();
+        
+        //get data from retrieved json object
+        const chart = data.weeklyartistchart;
+        const artists = chart.artist;
 
-      //get data from retrieved json object
-      const chart = data.weeklyartistchart;
-      const artists = chart.artist;
-      let i=0;
-      for (artist of artists) {
-        if(i<10){
-          artists_array.push(artist.name);
-          plays_array.push(artist.playcount);
-          i++;
-        }         
+        for (artist of artists) {
+          if(j<10){//read top 10 only
+            artists_array.push(artist.name);
+            plays_array.push(artist.playcount);
+            j++;
+          }
+        }
+        //add to csv with associated date
+        console.log("data for period: " + from + " to: " + i);
+        console.log(artists_array);
+        console.log(plays_array);
+
+        //clear arrays for next iteration
+        artists_array.length = 0;
+        plays_array.length = 0;
+        j=0;
+      
       }
-      console.log(data);
+      
+      
   } catch (error) {
       console.error('Operation herror..', error);
   }
