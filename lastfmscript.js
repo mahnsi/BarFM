@@ -143,6 +143,12 @@ async function getDataSet(username, period) {
             j++;
           }
         }
+
+        //have all the unique artists in one column
+        //for each iteration, append a new column with the plays of each artist for that period
+        //column headers will be: first column = "artists", next colums are the date range
+        //for an artist thats not in the top 10 for that period, put a 0 in the plays column
+
         console.log("data for period: " + new Date(from * 1000) + " to: " + new Date(i * 1000));
         console.log(artists_array);
         console.log(plays_array);
