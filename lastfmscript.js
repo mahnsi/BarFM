@@ -89,7 +89,7 @@ function getEpoch(username) {
 async function getDataSet(username, period) {
   console.log("3: getting data set for user " + username);
       const epoch = await getEpoch(username); // Wait for getEpoch to finish- returns epoch in seconds
-      const artists_array = []; const plays_array = [];
+      const artists_array = []; const plays_array = []; const all_artists = new Set();
       let from = 0; let to = 0; let interval = 0;
       to = Math.floor(Date.now() / 1000);//current unix time in seconds
       //check timeframe
@@ -139,11 +139,11 @@ async function getDataSet(username, period) {
           if(j<10){//read top 10 only
             artists_array.push(artist.name);
             plays_array.push(artist.playcount);
+            all_artists.add(artist.name); //lists of all unique artists that show up in the top 10 in the whole time period
             j++;
           }
         }
-        //add to csv with associated date
-        console.log("data for period: " + from + " to: " + i);
+        console.log("data for period: " + new Date(from * 1000) + " to: " + new Date(i * 1000));
         console.log(artists_array);
         console.log(plays_array);
 
