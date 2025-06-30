@@ -74,13 +74,13 @@ function getEpoch(username) {
           .then(data => {
               const user = data.user;
               const epoch = user.registered.unixtime;
-              const date = new Date(epoch * 1000); // Convert seconds to milliseconds
+              const date = new Date(epoch * 1000); // convert seconds to milliseconds
               console.log("4: Account created: " + date + epoch);
-              resolve(epoch); // Resolve the promise with the epoch value
+              resolve(epoch); 
           })
           .catch(error => {
               console.error('Operation error', error);
-              reject(error); // Reject the promise if there's an error
+              reject(error);
           });
   });
 }
@@ -112,6 +112,7 @@ async function getDataSet(username, period) {
         from = epoch;
       }
       console.log("data from: " + from + " to: " + to);
+      dataset = [["artists"]]; //initialize dataset with the first column header, following columns are dates and will be added later
 
   try{
    let j=0;
@@ -136,7 +137,7 @@ async function getDataSet(username, period) {
         const artists = chart.artist;
 
         for (artist of artists) {
-          if(j<10){//read top 10 only
+          if(j<10){//read top 10 (for each date) only
             artists_array.push(artist.name);
             plays_array.push(artist.playcount);
             all_artists.add(artist.name); //lists of all unique artists that show up in the top 10 in the whole time period
