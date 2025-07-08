@@ -89,7 +89,7 @@ function getEpoch(username) {
 async function getDataSet(username, period) {
   console.log("3: getting data set for user " + username);
       const epoch = await getEpoch(username); // Wait for getEpoch to finish- returns epoch in seconds
-      const artists_array = []; const plays_array = []; const all_artists = new Set();
+      const artists_array = []; const plays_array = []; const all_artists = new Map();
       let from = 0; let to = 0; let interval = 0;
       to = Math.floor(Date.now() / 1000);//current unix time in seconds
       //check timeframe
@@ -112,10 +112,10 @@ async function getDataSet(username, period) {
         from = epoch;
       }
       console.log("data from: " + from + " to: " + to);
-      dataset = [["artists"]]; //initialize dataset with the first column header, following columns are dates and will be added later
 
   try{
    let j=0;
+   let k = 0;
       for (i = from; i<=to; i+=interval){
         //changes 'to' and from=i values based on iteration
         URL = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user=" +
@@ -140,12 +140,19 @@ async function getDataSet(username, period) {
           if(j<10){//read top 10 (for each date) only
             artists_array.push(artist.name);
             plays_array.push(artist.playcount);
-            all_artists.add(artist.name); //lists of all unique artists that show up in the top 10 in the whole time period
+
+            if (!all_artists.has(artist.name)) {
+              all_artists.set(artist.name, new Array(30).fill(0)); //lists of all unique artists that show up in the top 10 in the whole time period
+            }
+            
+            arr = all_artists.get(artist.name)
+            arr.splice(k, 0, artist.playcount); // add the playcount for that artist at index k (time period k)
+
             j++;
           }
         }
 
-        //have all the unique artists in one column
+        //have all the unique artists in one column (all_artists)
         //for each iteration, append a new column with the plays of each artist for that period
         //column headers will be: first column = "artists", next colums are the date range
         //for an artist thats not in the top 10 for that period, put a 0 in the plays column
@@ -158,9 +165,14 @@ async function getDataSet(username, period) {
         artists_array.length = 0;
         plays_array.length = 0;
         j=0;
+
+        k++;
       
       }
-      
+      console.log("all artists: ", all_artists);
+      const obj = Object.fromEntries(all_artists);
+      const hi = JSON.stringify(obj);
+      console.log("hi:", hi);
       
   } catch (error) {
       console.error('Operation herror..', error);
