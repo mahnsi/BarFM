@@ -142,7 +142,7 @@ async function getDataSet(username, period) {
             plays_array.push(artist.playcount);
 
             if (!all_artists.has(artist.name)) {
-              all_artists.set(artist.name, new Array(30).fill(0)); //lists of all unique artists that show up in the top 10 in the whole time period
+              all_artists.set(artist.name, new Array(45).fill(0)); //lists of all unique artists that show up in the top 10 in the whole time period
             }
             
             arr = all_artists.get(artist.name)
