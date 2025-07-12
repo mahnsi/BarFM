@@ -30,34 +30,32 @@ data = {
     "sign crushes motorist":[0,0,0,0,0,0,0,0,0,0,"31","33","33","33",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 }
 
-# Pad and convert
+# pad and convert
 max_len = max(len(v) for v in data.values())
 for artist in data:
     data[artist] = [float(x) for x in data[artist]]
     data[artist] += [0.0] * (max_len - len(data[artist]))
 
 df = pd.DataFrame(data)
-df.index.name = 'Date Range'
+df.index.name = 'Date Range' #each row represents a different date range (end date)
 print(df.head())
 
 # ----------------------
-# Step 2: Interpolate between frames
-# ----------------------
-steps_between = 10  # Smoothness
+# interpolate for smoothness
+steps_between = 20  
 frames = []
 
 for i in range(len(df) - 1):
-    current = df.iloc[i]
-    next_row = df.iloc[i + 1]
+    current = df.iloc[i] # current row (date range)
+    next = df.iloc[i + 1]
     for step in range(steps_between):
-        interp = current + (next_row - current) * (step / steps_between)
-        frames.append(interp)
+        interp = current + (next - current) * (step / steps_between)
+        frames.append(interp) # adding more "intermediate" frames in between so its not jumpy
 
-frames.append(df.iloc[-1])  # Final frame
+frames.append(df.iloc[-1])  #final frame
 
 # ----------------------
-# Step 3: Assign fixed colors to artists
-# ----------------------
+# colours
 import random
 random.seed(42)
 artist_list = df.columns.tolist()
@@ -65,8 +63,7 @@ colors = plt.cm.tab20.colors + plt.cm.Paired.colors + plt.cm.Set3.colors
 artist_colors = {artist: colors[i % len(colors)] for i, artist in enumerate(artist_list)}
 
 # ----------------------
-# Step 4: Animate
-# ----------------------
+# animation
 fig, ax = plt.subplots(figsize=(10, 6))
 
 def update(frame_idx):
