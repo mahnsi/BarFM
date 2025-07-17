@@ -116,6 +116,7 @@ async function getDataSet(username, period) {
   try{
    let j=0;
    let k = 0;
+   let timestamp_array = [];
       for (i = from; i<=to; i+=interval){
         //changes 'to' and from=i values based on iteration
         URL = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user=" +
@@ -138,8 +139,8 @@ async function getDataSet(username, period) {
 
         for (artist of artists) {
           if(j<10){//read top 10 (for each date) only
-            artists_array.push(artist.name);
-            plays_array.push(artist.playcount);
+            artists_array.push(artist.name); //for logging purposes
+            plays_array.push(artist.playcount); //for logging purposes
 
             if (!all_artists.has(artist.name)) {
               all_artists.set(artist.name, new Array(45).fill(0)); //lists of all unique artists that show up in the top 10 in the whole time period
@@ -166,13 +167,27 @@ async function getDataSet(username, period) {
         plays_array.length = 0;
         j=0;
 
+        timestamp_array.push(new Date(i * 1000).toLocaleDateString()); //push the date of the period to the timestamp array
+
         k++;
       
       }
-      console.log("all artists: ", all_artists);
+      console.log("all unique artists with plays: ", all_artists);
+      console.log("timestamp array: ", timestamp_array);
+
       const obj = Object.fromEntries(all_artists);
       const hi = JSON.stringify(obj);
-      console.log("hi:", hi);
+      fetch("http://localhost:5000/save_data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(Object.fromEntries(all_artists))
+    })
+    .then(res => res.json())
+    .then(data => console.log("✅ Data sent to Python:", data))
+    .catch(err => console.error("❌ Error sending to Python:", err));
+
       
   } catch (error) {
       console.error('Operation herror..', error);

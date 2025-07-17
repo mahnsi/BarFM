@@ -30,19 +30,20 @@ data = {
     "sign crushes motorist":[0,0,0,0,0,0,0,0,0,0,"31","33","33","33",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 }
 
-# pad and convert
+# pad data to same as max size and convert to floats
 max_len = max(len(v) for v in data.values())
 for artist in data:
     data[artist] = [float(x) for x in data[artist]]
     data[artist] += [0.0] * (max_len - len(data[artist]))
 
+# create data frame 
 df = pd.DataFrame(data)
-df.index.name = 'Date Range' #each row represents a different date range (end date)
+df.index.name = 'Date Range' #means each row represents a different date range (end date)
 print(df.head())
 
 # ----------------------
 # interpolate for smoothness
-steps_between = 20  
+steps_between = 30  
 frames = []
 
 for i in range(len(df) - 1):
@@ -83,5 +84,4 @@ def update(frame_idx):
 
 ani = FuncAnimation(fig, update, frames=len(frames), interval=100)
 
-# Save as smooth gif (no ffmpeg needed)
-ani.save("bar_race_smooth.gif", writer='pillow', fps=30)
+ani.save("visual/bar_race_smooth.gif", writer='pillow', fps=30)
