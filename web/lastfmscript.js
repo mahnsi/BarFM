@@ -177,12 +177,12 @@ async function getDataSet(username, period) {
 
       const obj = Object.fromEntries(all_artists);
       const hi = JSON.stringify(obj);
-      fetch("http://localhost:5000/save_data", {
+      fetch("http://localhost:5000/save_data", { //fetch (send http request) to the flask python server
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(Object.fromEntries(all_artists))
+      body: hi
     })
     .then(res => res.json())
     .then(data => console.log("✅ Data sent to Python:", data))
