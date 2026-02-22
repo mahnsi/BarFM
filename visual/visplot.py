@@ -1,64 +1,164 @@
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-import json
+import matplotlib.cm as cm
 
-with open('visual/data.json', 'r') as file:
-    data = json.load(file)
+# -----------------------------
+# Load and clean data
+# -----------------------------
 
-# pad data to same as max size and convert to floats
-max_len = max(len(v) for v in data.values())
-for artist in data:
-    data[artist] = [float(x) for x in data[artist]]
-    data[artist] += [0.0] * (max_len - len(data[artist]))
+with open("visual/data.json", "r") as f:
+    raw = json.load(f)
 
-# create data frame 
-df = pd.DataFrame(data)
-df.index.name = 'Date Range' #means each row represents a different date range (end date)
-print(df.head())
+# Convert to equal-length integer lists
+clean = {}
+max_len = 0
 
-# ----------------------
-# interpolate for smoothness
-steps_between = 30  
-frames = []
+for artist, values in raw.items():
+    vals = [int(v) for v in values]
+    clean[artist] = vals
+    max_len = max(max_len, len(vals))
 
-for i in range(len(df) - 1):
-    current = df.iloc[i] # current row (date range)
-    next = df.iloc[i + 1]
-    for step in range(steps_between):
-        interp = current + (next - current) * (step / steps_between)
-        frames.append(interp) # adding more "intermediate" frames in between so its not jumpy
+for artist in clean:
+    if len(clean[artist]) < max_len:
+        clean[artist] += [0] * (max_len - len(clean[artist]))
 
-frames.append(df.iloc[-1])  #final frame
+df = pd.DataFrame(clean)
+artists = df.columns.tolist()
 
-# ----------------------
-# colours
-import random
-random.seed(42)
-artist_list = df.columns.tolist()
-colors = plt.cm.tab20.colors + plt.cm.Paired.colors + plt.cm.Set3.colors
-artist_colors = {artist: colors[i % len(colors)] for i, artist in enumerate(artist_list)}
+# -----------------------------
+# Animation parameters
+# -----------------------------
 
-# ----------------------
-# animation
-fig, ax = plt.subplots(figsize=(10, 6))
+TOP_N = 10
+STEPS_PER_PERIOD = 50      # smoothness
+INTERVAL = 30              # speed (ms)
 
-def update(frame_idx):
-    ax.clear()
-    frame = frames[frame_idx]
-    top10 = frame.sort_values(ascending=False).head(10)[::-1]
+total_frames = (len(df) - 1) * STEPS_PER_PERIOD
 
-    bars = ax.barh(top10.index, top10.values, color=[artist_colors[artist] for artist in top10.index])
-    ax.set_title(f"Top 10 Artists — Frame {frame_idx//steps_between + 1}", fontsize=16)
-    ax.set_xlim(0, df.max().max() * 1.1)
-    ax.grid(True, axis='x', linestyle='--', alpha=0.3)
+# -----------------------------
+# Stable colors
+# -----------------------------
 
-    for bar in bars:
-        width = bar.get_width()
-        ax.text(width + 1, bar.get_y() + bar.get_height()/2,
-                f'{width:.1f}', va='center', fontsize=10)
+cmap = cm.get_cmap("tab20", len(artists))
+colors = {artist: cmap(i) for i, artist in enumerate(artists)}
 
-ani = FuncAnimation(fig, update, frames=len(frames), interval=100)
+# -----------------------------
+# Figure setup
+# -----------------------------
 
-ani.save("visual/bar_race_smooth.gif", writer='pillow', fps=30)
+fig, ax = plt.subplots(figsize=(14, 8))
+plt.subplots_adjust(left=0.35)
+
+max_value = df.values.max()
+ax.set_xlim(0, max_value * 1.1)
+ax.set_ylim(-0.5, TOP_N - 0.5)
+ax.invert_yaxis()
+ax.set_yticks([])
+ax.set_xlabel("Value")
+ax.set_title("Bar Chart Race")
+
+# Persistent objects
+bars = {}
+name_text = {}
+value_text = {}
+
+for artist in artists:
+    bar = ax.barh(0, 0, color=colors[artist])[0]
+    bars[artist] = bar
+
+    name_text[artist] = ax.text(
+        0, 0, artist,
+        va="center",
+        ha="right",
+        fontsize=10
+    )
+
+    value_text[artist] = ax.text(
+        0, 0, "0",
+        va="center",
+        ha="left",
+        fontsize=10
+    )
+
+# -----------------------------
+# Helpers
+# -----------------------------
+
+def get_ranks(values):
+    ordered = values.sort_values(ascending=False)
+    return {artist: rank for rank, artist in enumerate(ordered.index)}
+
+def interpolate(frame):
+    period = frame // STEPS_PER_PERIOD
+    step = frame % STEPS_PER_PERIOD
+    alpha = step / STEPS_PER_PERIOD
+
+    v0 = df.iloc[period]
+    v1 = df.iloc[period + 1]
+
+    values = v0 + (v1 - v0) * alpha
+
+    r0 = get_ranks(v0)
+    r1 = get_ranks(v1)
+
+    ranks = {
+        artist: r0[artist] + (r1[artist] - r0[artist]) * alpha
+        for artist in artists
+    }
+
+    return values, ranks
+
+# -----------------------------
+# Animation update
+# -----------------------------
+
+def update(frame):
+    values, ranks = interpolate(frame)
+
+    period = frame // STEPS_PER_PERIOD
+
+    # Update dynamic title
+    ax.set_title(f"Bar Chart Race — Date {period}")
+
+    # Determine top N at this moment
+    sorted_now = sorted(artists, key=lambda a: values[a], reverse=True)
+    top_artists = sorted_now[:TOP_N]
+
+    for artist in artists:
+        if artist in top_artists:
+            y = ranks[artist]
+            width = values[artist]
+
+            bars[artist].set_visible(True)
+            bars[artist].set_width(width)
+            bars[artist].set_y(y)
+
+            name_text[artist].set_visible(True)
+            name_text[artist].set_position((-max_value * 0.02, y))
+
+            value_text[artist].set_visible(True)
+            value_text[artist].set_position((width + max_value * 0.01, y))
+            value_text[artist].set_text(f"{int(width)}")
+
+        else:
+            bars[artist].set_visible(False)
+            name_text[artist].set_visible(False)
+            value_text[artist].set_visible(False)
+
+    return list(bars.values())
+# -----------------------------
+# Run animation
+# -----------------------------
+
+ani = FuncAnimation(
+    fig,
+    update,
+    frames=total_frames,
+    interval=INTERVAL,
+    blit=False
+)
+
+plt.show()
