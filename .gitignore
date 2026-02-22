@@ -1,3 +1,5 @@
 output.json
+data.json
+*.gif
 
 .DS_Store

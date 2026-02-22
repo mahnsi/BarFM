@@ -4,7 +4,7 @@ Enter last.fm username
 
 Select last 30 days, last 365 days, or select any year.
 
-I have created a time series animation
+Time series animation
 
 python http.server to serve web page
 
