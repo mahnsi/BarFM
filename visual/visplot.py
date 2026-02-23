@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 # Load and clean data
 # -----------------------------
 
-with open("visual/data.json", "r") as f:
+with open("visual/output.json", "r") as f:
     raw = json.load(f)
 
 # Convert to equal-length integer lists
@@ -152,7 +152,7 @@ def update(frame):
 # -----------------------------
 # Run animation
 # -----------------------------
-
+print("Starting animation...")
 ani = FuncAnimation(
     fig,
     update,
@@ -161,4 +161,8 @@ ani = FuncAnimation(
     blit=False
 )
 
-plt.show()
+#plt.show()
+
+output_path = "visual/visplot_gif.gif"
+print(f"Saving animation to {output_path} ...")
+ani.save(output_path, writer='pillow', fps=30)

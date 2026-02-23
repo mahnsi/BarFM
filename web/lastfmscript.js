@@ -185,8 +185,17 @@ async function getDataSet(username, period) {
       body: hi
     })
     .then(res => res.json())
-    .then(data => console.log("✅ Data sent to Python:", data))
-    .catch(err => console.error("❌ Error sending to Python:", err));
+    .then(data => {
+      console.log("Data sent to Python:", data)
+      return data;
+    })
+    .then(result => {
+      if (result.status === "success") {
+          document.getElementById("animation").src =
+              "http://localhost:5000/animation?" + new Date().getTime();
+      }
+    })
+    .catch(err => console.error("Error sending to Python:", err));
 
       
   } catch (error) {

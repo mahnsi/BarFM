@@ -9,3 +9,5 @@ Time series animation
 python http.server to serve web page
 
 flask to serve local data-receieve-send-save server (serves an endpoint to recieve some data)
+
+pipeline browser -> JS -> Flask -> JSON -> visploy.py -> browser display
