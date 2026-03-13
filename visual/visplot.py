@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import matplotlib.cm as cm
+from matplotlib.animation import FFMpegWriter
 
 # -----------------------------
 # Load and clean data
@@ -163,6 +164,8 @@ ani = FuncAnimation(
 
 #plt.show()
 
-output_path = "visual/visplot_gif.gif"
-print(f"Saving animation to {output_path} ...")
-ani.save(output_path, writer='pillow', fps=30)
+print(f"Saving animation...")
+
+
+writer = FFMpegWriter(fps=30, bitrate=1800)
+ani.save("visual/visplot.mp4", writer=writer)

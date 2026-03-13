@@ -11,7 +11,7 @@ def save_data():
     data = request.get_json() # get_json gets the JSON data sent from the JS client in the request body on the call to this endpoint
     print("Received from JS:", data)
 
-    # save to file
+    # save json data to file
     with open('visual/output.json', 'w') as f:
         import json
         json.dump(data, f, indent=2)
@@ -30,7 +30,7 @@ def save_data():
 
 @app.route('/animation')
 def get_animation():
-    return send_from_directory('visual', 'visplot_gif.gif')
+    return send_from_directory('visual', 'visplot.mp4')
 
 if __name__ == '__main__':
     app.run(port=5000)
